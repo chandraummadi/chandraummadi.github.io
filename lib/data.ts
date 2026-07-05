@@ -2,7 +2,16 @@ export const NAV_LINKS = [
   { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
+  { href: "#contact", label: "Contact" },
 ] as const;
+
+export const CONTACT = {
+  phone: "9000881239",
+  phoneHref: "tel:+919000881239",
+  email: "ummadi.chandra@gmail.com",
+  linkedinLabel: "linkedin.com/in/chandraummadi-devops",
+  linkedinHref: "https://www.linkedin.com/in/chandraummadi-devops",
+} as const;
 
 export const SOCIAL_LINKS = [
   { label: "GitHub", href: "https://github.com/chandraummadi" },
@@ -37,8 +46,8 @@ export const EXPERIENCE: ExperienceEntry[] = [
     title: "Senior Systems Administrator (SRE)",
     company: "JPMorgan Chase",
     description:
-      "Designed CI/CD pipelines with Jenkins for weekly release cycles. Automated infrastructure provisioning with Terraform, managed Kubernetes/Helm deployments, and configured monitoring with Prometheus, Grafana, and the ELK stack. Provided on-call support and led root-cause analysis for production incidents.",
-    tags: ["Kubernetes", "Terraform", "Prometheus", "Grafana", "ELK", "Jenkins"],
+      "Supported Site Reliability Engineering initiatives by defining operational best practices, improving system reliability, and enhancing production stability. Automated 15+ manual runbooks (patch management, cert rotation) using Python, saving 40 hours/month of ops time. Implemented monitoring tools to proactively identify and mitigate performance issues. Managed production incidents for Tier-1 applications, reducing Mean Time to Recovery (MTTR) from 45 minutes to 12 minutes through standardized runbooks and automated diagnostics. Performed root cause analysis and implemented preventive measures to improve platform reliability. Served as primary on-call for Tier-1 services.",
+    tags: ["Python Automation", "SRE", "Incident Management", "Monitoring", "Runbooks"],
   },
   {
     range: "2012 — 2017",
@@ -72,12 +81,6 @@ export const PROJECTS: Project[] = [
     description:
       "Led a 44-instance SAP EC2 migration between VPCs using AWS Application Migration Service, including a custom CloudFormation template for networking, HA NAT gateways, and SAP-specific security groups.",
     tags: ["AWS MGN", "CloudFormation", "VPC", "SAP"],
-  },
-  {
-    title: "FSx ONTAP NAS/iSCSI Automation",
-    description:
-      "Automated provisioning and configuration of FSx for NetApp ONTAP storage, covering both NAS and iSCSI access patterns for infrastructure workloads.",
-    tags: ["AWS FSx", "Storage", "Automation"],
   },
   {
     title: "Claude Code Skills Library for Infrastructure Engineering",
