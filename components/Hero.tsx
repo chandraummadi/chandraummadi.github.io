@@ -1,21 +1,30 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const FULL_NAME = "Chandra Sekhara Reddy Ummadi";
 const INITIALS = "CU";
 
 /**
- * Abstract, mouse-reactive background. Three blurred gradient blobs
- * drift toward the pointer at different speeds (parallax), giving a
- * sense of depth without needing a canvas/WebGL setup.
+ * Abstract background. On devices with a real mouse, three blurred
+ * gradient blobs drift toward the pointer (parallax depth). On touch
+ * devices there's no pointer to react to, so we skip the spring physics
+ * and event listeners entirely and render a static gradient instead -
+ * this avoids unnecessary JS work and GPU-heavy blur recalculation on
+ * phones, where it was making the page feel sluggish.
  */
 function ReactiveBackground({
   containerRef,
 }: {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
+  const [hasFinePointer, setHasFinePointer] = useState(false);
+
+  useEffect(() => {
+    setHasFinePointer(window.matchMedia("(pointer: fine)").matches);
+  }, []);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -23,8 +32,6 @@ function ReactiveBackground({
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
-  // Each blob moves at a different fraction of pointer offset - the
-  // smaller the fraction, the further back it feels (parallax depth).
   const blob1X = useTransform(smoothX, (v) => v * 0.04);
   const blob1Y = useTransform(smoothY, (v) => v * 0.04);
   const blob2X = useTransform(smoothX, (v) => v * -0.06);
@@ -37,6 +44,17 @@ function ReactiveBackground({
     if (!rect) return;
     mouseX.set(e.clientX - (rect.left + rect.width / 2));
     mouseY.set(e.clientY - (rect.top + rect.height / 2));
+  }
+
+  // Touch devices: static gradient, no listeners, no spring math.
+  if (!hasFinePointer) {
+    return (
+      <div aria-hidden className="absolute inset-0 overflow-hidden">
+        <div className="absolute left-[8%] top-[15%] h-72 w-72 rounded-full bg-accent-blue/20 blur-[80px]" />
+        <div className="absolute right-[10%] top-[35%] h-80 w-80 rounded-full bg-accent-purple/20 blur-[85px]" />
+        <div className="absolute bottom-[10%] left-[30%] h-56 w-56 rounded-full bg-accent-cyan/15 blur-[70px]" />
+      </div>
+    );
   }
 
   return (
