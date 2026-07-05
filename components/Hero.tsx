@@ -1,125 +1,133 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useRef } from "react";
+
+const FULL_NAME = "Chandra Sekhara Reddy Ummadi";
+const INITIALS = "CU";
 
 /**
- * Lines that "type" into the terminal card, in order.
- * Kept as data (not hardcoded JSX) so content stays easy to update
- * without touching animation logic.
+ * Abstract, mouse-reactive background. Three blurred gradient blobs
+ * drift toward the pointer at different speeds (parallax), giving a
+ * sense of depth without needing a canvas/WebGL setup.
  */
-const TERMINAL_LINES = [
-  { prompt: "$", text: "whoami", isCommand: true },
-  { prompt: ">", text: "Chandra Ummadi — AI + DevOps Engineer", isCommand: false },
-  { prompt: "$", text: "cat stack.txt", isCommand: true },
-  {
-    prompt: ">",
-    text: "AWS · Terraform · Kubernetes · GitHub Actions · AI Workflows",
-    isCommand: false,
-  },
-  { prompt: "$", text: "uptime --experience", isCommand: true },
-  { prompt: ">", text: "13+ years building infrastructure that doesn't page you at 3am", isCommand: false },
-];
+function ReactiveBackground({
+  containerRef,
+}: {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-function TerminalCard() {
-  const [visibleLines, setVisibleLines] = useState(0);
+  const springConfig = { damping: 30, stiffness: 60, mass: 1 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
 
-  useEffect(() => {
-    if (visibleLines >= TERMINAL_LINES.length) return;
-    const delay = TERMINAL_LINES[visibleLines].isCommand ? 550 : 700;
-    const timer = setTimeout(() => setVisibleLines((n) => n + 1), delay);
-    return () => clearTimeout(timer);
-  }, [visibleLines]);
+  // Each blob moves at a different fraction of pointer offset - the
+  // smaller the fraction, the further back it feels (parallax depth).
+  const blob1X = useTransform(smoothX, (v) => v * 0.04);
+  const blob1Y = useTransform(smoothY, (v) => v * 0.04);
+  const blob2X = useTransform(smoothX, (v) => v * -0.06);
+  const blob2Y = useTransform(smoothY, (v) => v * -0.03);
+  const blob3X = useTransform(smoothX, (v) => v * 0.08);
+  const blob3Y = useTransform(smoothY, (v) => v * -0.05);
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseX.set(e.clientX - (rect.left + rect.width / 2));
+    mouseY.set(e.clientY - (rect.top + rect.height / 2));
+  }
 
   return (
-    <div className="w-full max-w-xl rounded-xl border border-border bg-surface/80 shadow-2xl shadow-black/40 backdrop-blur-sm">
-      {/* Window chrome - macOS-style dots, a familiar terminal affordance */}
-      <div className="flex items-center gap-1.5 border-b border-border px-4 py-3">
-        <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]" />
-        <span className="ml-2 font-mono text-xs text-muted">
-          chandra@infra:~
-        </span>
-      </div>
-
-      <div className="min-h-[220px] px-5 py-5 font-mono text-sm leading-relaxed">
-        {TERMINAL_LINES.slice(0, visibleLines).map((line, i) => (
-          <div key={i} className="mb-1.5">
-            <span
-              className={
-                line.isCommand ? "text-accent-cyan" : "text-foreground"
-              }
-            >
-              <span className="mr-2 text-muted">{line.prompt}</span>
-              {line.text}
-            </span>
-          </div>
-        ))}
-        {visibleLines < TERMINAL_LINES.length && (
-          <span className="inline-block h-4 w-2 animate-caret-blink bg-accent-cyan align-middle" />
-        )}
-      </div>
+    <div
+      onPointerMove={handlePointerMove}
+      aria-hidden
+      className="pointer-events-auto absolute inset-0 overflow-hidden"
+    >
+      <motion.div
+        style={{ x: blob1X, y: blob1Y }}
+        className="absolute left-[8%] top-[15%] h-72 w-72 rounded-full bg-accent-blue/25 blur-[100px]"
+      />
+      <motion.div
+        style={{ x: blob2X, y: blob2Y }}
+        className="absolute right-[10%] top-[35%] h-96 w-96 rounded-full bg-accent-purple/25 blur-[110px]"
+      />
+      <motion.div
+        style={{ x: blob3X, y: blob3Y }}
+        className="absolute bottom-[10%] left-[30%] h-64 w-64 rounded-full bg-accent-cyan/20 blur-[90px]"
+      />
     </div>
   );
 }
 
 export function Hero() {
-  return (
-    <section className="relative flex min-h-screen items-center overflow-hidden px-6 py-24 md:px-12">
-      {/* Ambient gradient mesh - subtle, sits behind everything, never competes with the terminal */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.15]"
-        style={{
-          background:
-            "radial-gradient(circle at 20% 20%, #4F7CFF, transparent 40%), radial-gradient(circle at 80% 70%, #8B5CF6, transparent 40%)",
-        }}
-      />
+  const containerRef = useRef<HTMLDivElement>(null);
 
-      <div className="relative mx-auto grid w-full max-w-6xl gap-12 md:grid-cols-2 md:items-center">
+  return (
+    <section
+      ref={containerRef}
+      className="relative flex min-h-[80vh] items-center overflow-hidden px-6 py-16 md:px-12"
+    >
+      <ReactiveBackground containerRef={containerRef} />
+
+      <div className="relative mx-auto w-full max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-border bg-surface font-mono text-lg font-semibold text-accent-cyan md:h-20 md:w-20 md:text-xl"
         >
-          <p className="mb-4 font-mono text-sm text-accent-cyan">
-            AI + DevOps Engineer
-          </p>
-          <h1 className="text-4xl font-semibold tracking-tight text-foreground md:text-6xl">
-            I build infrastructure
-            <br />
-            that thinks ahead.
-          </h1>
-          <p className="mt-6 max-w-md text-lg text-muted">
-            13+ years automating cloud infrastructure at AWS scale. Now
-            extending that same discipline into AI-powered workflows and
-            agentic systems.
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-4">
-            <a
-              href="#projects"
-              className="rounded-lg bg-accent-blue px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-blue/90"
-            >
-              View my work
-            </a>
-            <a
-              href="#contact"
-              className="rounded-lg border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-surface-hover"
-            >
-              Get in touch
-            </a>
-          </div>
+          {INITIALS}
         </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+          className="text-balance text-[13vw] font-semibold leading-[0.95] tracking-tight text-foreground sm:text-[9vw] md:text-[6.5vw] lg:text-[5.5rem]"
+        >
+          {FULL_NAME}
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.25 }}
+          className="mt-5 font-mono text-lg text-accent-cyan md:text-xl"
+        >
+          AI + DevOps Engineer
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.35 }}
+          className="mt-4 max-w-2xl text-lg text-muted md:text-xl"
+        >
+          13+ years engineering AWS cloud infrastructure that scales &mdash;
+          now building that same discipline into AI-powered workflows and
+          agentic systems.
+        </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          className="flex justify-center md:justify-end"
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.45 }}
+          className="mt-8 flex flex-wrap gap-4"
         >
-          <TerminalCard />
+          <a
+            href="#projects"
+            className="rounded-lg bg-accent-blue px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-blue/90"
+          >
+            View my work
+          </a>
+          <a
+            href="#contact"
+            className="rounded-lg border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-surface-hover"
+          >
+            Get in touch
+          </a>
         </motion.div>
       </div>
     </section>
