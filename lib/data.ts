@@ -38,8 +38,8 @@ export const EXPERIENCE: ExperienceEntry[] = [
     title: "Digital Engineering Sr Staff Engineer",
     company: "NTT DATA",
     description:
-      "Own infrastructure deployment pipelines for core and managed AWS systems. Build and optimize CI/CD workflows with Jenkins and GitHub Actions, implement reusable Terraform modules adopted across projects, and lead infrastructure code reviews. Migrated on-premises workloads via AWS Migration Services and implemented AWS Landing Zone governance.",
-    tags: ["AWS", "Terraform", "GitHub Actions", "Jenkins", "IAM", "VPC"],
+      "Redesigned 12 CI/CD deployment pipelines using GitHub Actions and Terraform, cutting deployment time by 40% and enabling on-demand releases. Built a reusable GitHub Actions workflow library (15+ workflows) adopted by 8 teams, reducing pipeline maintenance by 60%. Created 25+ Terraform modules published to a private registry, enabling 3x faster environment provisioning. Led migration of 200+ VMs to AWS using AWS MGN + DMS, achieving 99.9% data integrity and a 40% infrastructure cost reduction. Designed a multi-account VPC architecture (Inspection, Shared Services, Workloads) with Transit Gateway and Route 53 Resolver across 20+ VPCs. Deployed a Prometheus/Grafana + Loki monitoring stack on EKS (50+ services), defining 200+ alerts with 95% noise reduction.",
+    tags: ["AWS", "Terraform", "GitHub Actions", "EKS", "Prometheus", "Grafana", "Transit Gateway"],
   },
   {
     range: "2017 — 2022",
