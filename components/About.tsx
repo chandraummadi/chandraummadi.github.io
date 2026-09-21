@@ -18,14 +18,14 @@ export function About() {
           on Terraform module architecture, CI/CD pipeline design with
           GitHub Actions and Jenkins, and AWS infrastructure spanning EC2,
           EKS, RDS, and IAM. Before that, I spent 5 years at{" "}
-          <span className="text-foreground">JPMorgan Chase</span> as an SRE,
+          <span className="text-foreground">JPMorgan Chase</span>  as an SRE,
           where I learned what &quot;highly available&quot; actually means
           when real money depends on it.
         </p>
         <p>
           I&apos;m currently extending that same infrastructure discipline
           into AI-powered workflows — building agentic tooling and DevOps
-          automation that combines 13 years of hands-on operations
+          automation that combines 14 years of hands-on operations
           knowledge with modern AI engineering practices, rather than
           treating them as separate disciplines.
         </p>
