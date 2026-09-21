@@ -6,7 +6,7 @@ export function About() {
       </h2>
       <div className="space-y-4 text-muted">
         <p>
-          I&apos;m an infrastructure engineer with 13+ years of experience
+          I&apos;m an infrastructure engineer with 14+ years of experience
           designing and operating cloud systems that stay reliable under
           real production load. My work spans AWS platform engineering,
           Kubernetes, and building Infrastructure-as-Code that other
