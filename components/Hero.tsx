@@ -123,7 +123,7 @@ export function Hero() {
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.35 }}
           className="mt-4 max-w-2xl text-lg text-muted md:text-xl"
         >
-          13+ years engineering AWS cloud infrastructure that scales &mdash;
+          14+ years engineering AWS cloud infrastructure that scales &mdash;
           now building that same discipline into AI-powered workflows and
           agentic systems.
         </motion.p>
